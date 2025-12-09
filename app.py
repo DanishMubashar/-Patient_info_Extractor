@@ -7,8 +7,7 @@ from dotenv import load_dotenv
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
-
-from langchain.chains import LLMChain
+from langchain.chains import ConversationChain
 from langchain.output_parsers import PydanticOutputParser
 
 # ------------------ Load API Key ------------------
@@ -43,7 +42,12 @@ prompt = ChatPromptTemplate(
     template=prompt_template
 )
 
-chain = LLMChain(llm=llm, prompt=prompt, output_parser=parser)
+# ------------------ Advanced Conversation Chain ------------------
+chain = ConversationChain(
+    llm=llm,
+    prompt=prompt,
+    output_parser=parser
+)
 
 # ------------------ Streamlit UI ------------------
 st.set_page_config(page_title="Medical NLP Extractor", layout="centered")
@@ -82,7 +86,7 @@ if st.button("Extract Info"):
 
         # Display extracted info **ONLY for current patient**
         st.subheader(f"Extracted Info for Patient ID {patient_entry['id']}")
-        st.json(patient_entry["extracted_info"])  # <-- SHOW ONLY EXTRACTED INFO
+        st.json(patient_entry["extracted_info"])
 
         # Save all patient data to JSON file
         json_filename = "all_patients_data.json"
@@ -99,5 +103,3 @@ if st.session_state.get("patients_data"):
         file_name="all_patients_data.json",
         mime="application/json"
     )
-
-
