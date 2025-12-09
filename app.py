@@ -6,7 +6,9 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.prompts import PromptTemplate
+# from langchain.prompts import PromptTemplate
+from langchain.prompts.prompt import PromptTemplate
+
 from langchain.chains import LLMChain
 from langchain.output_parsers import PydanticOutputParser
 
@@ -98,3 +100,4 @@ if st.session_state.get("patients_data"):
         file_name="all_patients_data.json",
         mime="application/json"
     )
+
