@@ -7,7 +7,9 @@ from dotenv import load_dotenv
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
-from langchain.output_parsers import PydanticOutputParser
+# from langchain.output_parsers import PydanticOutputParser
+from langchain_core.output_parsers import PydanticOutputParser
+
 
 # ==============================================
 # Load API Key
@@ -217,4 +219,5 @@ if st.session_state.patients_data:
         "application/json",
         use_container_width=True
     )
+
 
