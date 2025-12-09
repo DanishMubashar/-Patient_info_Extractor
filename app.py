@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
-from langchain.chains import ConversationChain
+from langchain.schema.runnable import RunnableSequence, RunnableMap
 from langchain.output_parsers import PydanticOutputParser
 
 # ------------------ Load API Key ------------------
@@ -42,11 +42,16 @@ prompt = ChatPromptTemplate(
     template=prompt_template
 )
 
-# ------------------ Advanced Conversation Chain ------------------
-chain = ConversationChain(
-    llm=llm,
-    prompt=prompt,
-    output_parser=parser
+# ------------------ Runnable-based chain ------------------
+# RunnableSequence with a single step now, but ready for expansion
+extraction_runnable = RunnableSequence(
+    steps=[
+        RunnableMap(
+            {
+                "extracted_info": llm | prompt | parser  # LLM -> Prompt -> Parser
+            }
+        )
+    ]
 )
 
 # ------------------ Streamlit UI ------------------
@@ -56,7 +61,6 @@ st.title("🩺 Medical NLP Patient Info Extractor")
 # Initialize session state
 if "patient_id" not in st.session_state:
     st.session_state.patient_id = 1
-
 if "patients_data" not in st.session_state:
     st.session_state.patients_data = []
 
@@ -70,32 +74,34 @@ if st.button("Extract Info"):
     else:
         with st.spinner("Extracting patient info..."):
             try:
-                result: PatientInfo = chain.run(patient_text)
+                # Run the RunnableSequence
+                result = extraction_runnable.invoke({"patient_text": patient_text})
+                extracted_info = result["extracted_info"]
             except Exception as e:
                 st.error(f"Error during extraction: {e}")
-                result = PatientInfo()
+                extracted_info = PatientInfo().dict()
 
         # Assign ID and store
         patient_entry = {
             "id": st.session_state.patient_id,
             "patient_text": patient_text,
-            "extracted_info": result.dict()
+            "extracted_info": extracted_info
         }
         st.session_state.patients_data.append(patient_entry)
         st.session_state.patient_id += 1
 
-        # Display extracted info **ONLY for current patient**
+        # Display extracted info
         st.subheader(f"Extracted Info for Patient ID {patient_entry['id']}")
         st.json(patient_entry["extracted_info"])
 
-        # Save all patient data to JSON file
+        # Save all patient data to JSON
         json_filename = "all_patients_data.json"
         with open(json_filename, "w", encoding="utf-8") as f:
             json.dump(st.session_state.patients_data, f, ensure_ascii=False, indent=2)
 
         st.success(f"Patient ID {patient_entry['id']} data saved successfully!")
 
-# ------------------ Download JSON ------------------
+# Download JSON button
 if st.session_state.get("patients_data"):
     st.download_button(
         label="📥 Download All Patients JSON",
