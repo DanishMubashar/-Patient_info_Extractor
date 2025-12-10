@@ -88,7 +88,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<h1 style='text-align:center;'>🩺 Medical Patient Information Extractor</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align:center;'>🩺 Medical Patient Symptom Extractor</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align:center;'>Convert patient text into clean and structured medical information.</p>", unsafe_allow_html=True)
 
 # ==============================================
