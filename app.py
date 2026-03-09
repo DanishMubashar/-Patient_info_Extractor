@@ -89,7 +89,7 @@ def analyze_medical_report(report_text: str) -> str:
         return "API Key missing for report analysis"
     
     llm = ChatGoogleGenerativeAI(
-        model="gemini-1.5-pro",
+        model="gemini-2.5-flash",
         google_api_key=API_KEY,
         temperature=0.2
     )
@@ -123,7 +123,7 @@ def get_chat_response(messages: List, user_input: str, uploaded_reports: List = 
         raise ValueError("API Key missing!")
     
     llm = ChatGoogleGenerativeAI(
-        model="gemini-1.5-pro",
+        model="gemini-2.5-flash",
         google_api_key=API_KEY,
         temperature=0.3
     )
@@ -245,7 +245,7 @@ def generate_detailed_report(chat_history: List, uploaded_reports: List = None) 
         conversation += f"{role}: {msg['content']}\n\n"
     
     llm = ChatGoogleGenerativeAI(
-        model="gemini-1.5-pro",
+        model="gemini-2.5-flash",
         google_api_key=API_KEY,
         temperature=0.1
     )
